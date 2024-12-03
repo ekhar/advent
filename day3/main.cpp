@@ -66,7 +66,7 @@ int solvePart1(const vector<string> &input) {
     // cout << "j" + to_string(j) << endl;
     // cout << "hello " + str.substr(original_j, j) << endl;
     //
-    cout << "hello2 " + str.substr(original_j, j - original_j) << endl;
+    // cout << "hello2 " + str.substr(original_j, j - original_j) << endl;
     return j != original_j ? stoi(str.substr(original_j, j - original_j)) : -1;
   };
   for (int i = 0; i < input.size(); i++) {
@@ -77,7 +77,7 @@ int solvePart1(const vector<string> &input) {
       string first_compare = s.substr(j, 4);
       // cout << first_compare << endl;
       if (first_compare == "mul(") {
-        j += 5;
+        j += 4;
         int first, second;
         first = digitCheck(s, j);
         if (first == -1)
@@ -102,7 +102,58 @@ int solvePart1(const vector<string> &input) {
 }
 
 // Part 2 solution
-int solvePart2(const vector<string> &input) { return 0; }
+int solvePart2(const vector<string> &input) {
+  int ret = 0;
+
+  bool doit = true;
+
+  auto digitCheck = [](const std::string &str, int &j) -> int {
+    int original_j = j;
+    int limit = j + 4;
+    for (; j <= limit; j++) {
+      if (!isdigit(str[j])) {
+        break;
+      }
+    }
+    return j != original_j ? stoi(str.substr(original_j, j - original_j)) : -1;
+  };
+
+  for (int i = 0; i < input.size(); i++) {
+
+    string s = input[i];
+    for (int j_one = 0; j_one < s.size(); j_one++) {
+      int j = j_one;
+      if (s.substr(j, 4) == "do()") {
+        doit = true;
+      } else if (s.substr(j, 7) == "don't()") {
+        doit = false;
+      }
+      string first_compare = s.substr(j, 4);
+      // cout << first_compare << endl;
+      if (first_compare == "mul(") {
+        j += 4;
+        int first, second;
+        first = digitCheck(s, j);
+        if (first == -1)
+          continue;
+
+        if (s[j] != ',')
+          continue;
+        j++;
+        second = digitCheck(s, j);
+
+        // cout << "hello hello" << endl;
+        if (second == -1)
+          continue;
+
+        // cout << "hello hello hello" << endl;
+        if (s[j] == ')' && doit)
+          ret += first * second;
+      }
+    }
+  }
+  return ret;
+}
 
 int main() {
   // Read input
